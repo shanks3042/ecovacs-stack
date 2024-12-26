@@ -302,21 +302,57 @@ const mqttClient = () => {
       const res = getDatafromMessage(message);
       const type = res?.type;
 
-      type === 'ar' &&
-        decompressLZMA(res.value).then((value) =>
+      if (type === 'ar') {
+        if (!res.value.startsWith('-') && !res.value.match(/^\d/)) {
+          console.log('we will decompress');
+          decompressLZMA(res.value).then((value) =>
+            WSsocket?.emit(`mapSubSet`, {
+              ...res,
+              value: value
+                .toString()
+                .split(';')
+                .map((current) => current.split(',')),
+            })
+          )
+          .catch((error) => {
+              // Handle the error here
+              console.error("Error during LZMA decompression:", error);
+              //console.error("Error response value of the vacuum robot is: ", res.value);
+           });
+        } else {
+          console.log('no need to decompress');
+          console.log(res.value);
+          const coords: Array<any> = res.value
+            .toString()
+            .split(';')
+            .map((current: any) => current.split(','))
+            .filter((current: any) => current[0] != '' && current[1] != '');
+          console.log(coords);
+          console.log(coords.map((cur) => Number(cur[1])));
+          
+          let center: Array<any> = [0, 0];
+          coords.forEach((coord) => {
+            center[0] = center[0] + Number(coord[0]);
+            center[1] = center[1] + Number(coord[1]);
+          });
+
+
+          center[0] = Math.floor(center[0] / coords.length).toString();
+          center[1] = Math.floor(center[1] / coords.length).toString();
+          let cen = center.join(',');
+          console.log('center:');
+          console.log(center);
+          console.log(cen);
           WSsocket?.emit(`mapSubSet`, {
             ...res,
-            value: value
+            value: res.value
               .toString()
               .split(';')
-              .map((current) => current.split(',')),
-          }),
-        )
-        .catch((error) => {
-          // Handle the error here
-          console.error("Error during LZMA decompression:", error);
-          //console.error("Error response value of the vacuum robot is: ", res.value);
-       });
+              .map((current: any) => current.split(',')),
+            center: cen,
+          });
+        }
+      }
 
       type === 'mw' && WSsocket?.emit(`NoMopMapSubSet`, { ...res, value: formatStringSubset(res.value) });
       type === 'vw' && WSsocket?.emit(`NoGoMapSubSet`, { ...res, value: formatStringSubset(res.value) });
