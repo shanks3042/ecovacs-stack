@@ -7,13 +7,13 @@ services:
   mysql:
     image: mysql:latest
     ports:
-      - 3306:3306
+      - 3307:3306
     environment:
       - MYSQL_ROOT_PASSWORD=dev
       - MYSQL_USER=dev
       - MYSQL_PASSWORD=dev
       - MYSQL_DATABASE=dev
-      - TZ=America/New_York
+      - TZ=Europe/Vienna
     networks:
       ecovacs_stack:
       default:
@@ -41,7 +41,7 @@ services:
       - MYSQL_USER=dev
       - MYSQL_PASSWORD=dev
       - MYSQL_DATABASE=dev
-      - TZ=America/New_York
+      - TZ=Europe/Vienna
     command: bash -c './generate_certs.sh && yarn install && yarn run dev'
     stdin_open: true
     restart: unless-stopped
@@ -73,7 +73,7 @@ services:
     user: '${UID}:${GID}'
     environment:
       - WDS_SOCKET_PORT=0
-      - TZ=America/New_York
+      - TZ=Europe/Vienna
     networks:
       default:
     volumes:
