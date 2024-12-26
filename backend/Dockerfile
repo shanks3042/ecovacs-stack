@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM node:hydrogen-alpine3.20
 RUN apk  --no-cache add bash curl wget build-base g++ cairo-dev jpeg-dev pango-dev giflib-dev --upgrade grep --update sudo
 
 RUN echo "node ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/node \
