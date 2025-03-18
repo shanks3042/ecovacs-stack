@@ -4,8 +4,8 @@ networks:
   ecovacs_stack:
     internal: true
 services:
-  mysql:
-    image: mysql:latest
+  mariadb:
+    image: mariadb:lts
     ports:
       - 3307:3306
     environment:
@@ -18,14 +18,14 @@ services:
       ecovacs_stack:
       default:
     volumes:
-      - ./mysql/data:/var/lib/mysql
-      - ./mysql/mysql.conf.d:/etc/mysql/conf.d
-      - ./mysql/scripts/init.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./mariadb/data:/var/lib/mysql
+      - ./mariadb/mysql.conf.d:/etc/mysql/conf.d
+      - ./mariadb/scripts/init.sql:/docker-entrypoint-initdb.d/1.sql
     restart: unless-stopped
 
   backend:
     depends_on:
-      - mysql
+      - mariadb
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -42,7 +42,7 @@ services:
       - MYSQL_PASSWORD=dev
       - MYSQL_DATABASE=dev
       - TZ=Europe/Vienna
-    command: bash -c './generate_certs.sh && yarn install && yarn run dev'
+    command: bash -c './generate_certs.sh && yarn install && yarn start'
     stdin_open: true
     restart: unless-stopped
 
