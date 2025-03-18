@@ -216,7 +216,7 @@ const mqttClient = () => {
 
     if (isTopic('getAIMap', topic)) {
       const res = getDatafromMessage(message);
-      console.log(res);
+      //console.log(res);
       if (res.pointValue.length) {
         WSsocket.emit('obstacleList', res.pointValue);
       }
@@ -304,7 +304,7 @@ const mqttClient = () => {
 
       if (type === 'ar') {
         if (!res.value.startsWith('-') && !res.value.match(/^\d/)) {
-          console.log('we will decompress');
+          
           decompressLZMA(res.value).then((value) =>
             WSsocket?.emit(`mapSubSet`, {
               ...res,
@@ -320,15 +320,15 @@ const mqttClient = () => {
               //console.error("Error response value of the vacuum robot is: ", res.value);
            });
         } else {
-          console.log('no need to decompress');
-          console.log(res.value);
+          //console.log('no need to decompress');
+          //console.log(res.value);
           const coords: Array<any> = res.value
             .toString()
             .split(';')
             .map((current: any) => current.split(','))
             .filter((current: any) => current[0] != '' && current[1] != '');
-          console.log(coords);
-          console.log(coords.map((cur) => Number(cur[1])));
+          //console.log(coords);
+          //console.log(coords.map((cur) => Number(cur[1])));
           
           let center: Array<any> = [0, 0];
           coords.forEach((coord) => {
@@ -340,9 +340,9 @@ const mqttClient = () => {
           center[0] = Math.floor(center[0] / coords.length).toString();
           center[1] = Math.floor(center[1] / coords.length).toString();
           let cen = center.join(',');
-          console.log('center:');
-          console.log(center);
-          console.log(cen);
+          //console.log('center:');
+          //console.log(center);
+          //console.log(cen);
           WSsocket?.emit(`mapSubSet`, {
             ...res,
             value: res.value
